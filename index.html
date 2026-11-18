@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>XYZ Pay-per-km: prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B2B3C; --accent: #067455; --mint: #47D7AC; --tint: #DFF6EE; --wash: #F3FBF8;
+    --ink: #26313D; --slate: #4A5866; --line: #D3E3DD; --white: #FFFFFF; --warn: #B54708; --warnbg: #FFF4E5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: #E9EFEC; -webkit-font-smoothing: antialiased; }
+  button { font: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
+
+  /* page layout: phone in the middle, guide beside it on wide screens */
+  .stage { min-height: 100%; display: flex; align-items: center; justify-content: center; gap: 40px; padding: 28px 20px; }
+  .guide { width: 320px; }
+  .guide h1 { font-size: 22px; line-height: 1.25; color: var(--navy); margin-bottom: 8px; }
+  .guide p { font-size: 14px; line-height: 1.5; color: var(--slate); margin-bottom: 14px; }
+  .steps { list-style: none; display: grid; gap: 6px; margin-bottom: 16px; }
+  .steps button { width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; background: var(--white); border: 1px solid var(--line); font-size: 14px; color: var(--slate); display: flex; gap: 10px; align-items: center; }
+  .steps button .n { width: 22px; height: 22px; border-radius: 50%; background: var(--wash); color: var(--navy); font-weight: 700; font-size: 12px; display: grid; place-items: center; flex: none; }
+  .steps button[aria-current="true"] { background: var(--navy); color: var(--white); border-color: var(--navy); font-weight: 600; }
+  .steps button[aria-current="true"] .n { background: var(--mint); color: var(--navy); }
+  .note { font-size: 12px; color: var(--slate); line-height: 1.45; border-top: 1px solid var(--line); padding-top: 12px; }
+
+  .phone { width: 390px; height: 844px; border-radius: 52px; background: #0d1b24; padding: 12px; box-shadow: 0 20px 50px rgba(11,43,60,.25); flex: none; }
+  .screen { width: 100%; height: 100%; border-radius: 42px; background: var(--white); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+  .status { height: 44px; flex: none; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-size: 14px; font-weight: 600; }
+  .island { width: 110px; height: 30px; border-radius: 20px; background: #0d1b24; }
+  .bar { display: flex; align-items: center; gap: 10px; padding: 6px 18px 10px; flex: none; }
+  .logo { width: 30px; height: 30px; border-radius: 9px; background: var(--navy); color: var(--mint); font-weight: 800; font-size: 11px; display: grid; place-items: center; letter-spacing: .3px; }
+  .bar .t { font-weight: 700; font-size: 16px; color: var(--navy); }
+  .bar .s { font-size: 12px; color: var(--slate); }
+  .body { flex: 1; overflow-y: auto; padding: 4px 18px 18px; }
+  .foot { flex: none; padding: 12px 18px 22px; border-top: 1px solid var(--line); background: var(--white); }
+
+  h2 { font-size: 22px; line-height: 1.25; color: var(--navy); margin: 6px 0 6px; }
+  .sub { font-size: 14px; color: var(--slate); line-height: 1.45; margin-bottom: 14px; }
+  .card { border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 12px; background: var(--white); }
+  .card.tint { background: var(--tint); border-color: var(--tint); }
+  .card.wash { background: var(--wash); border-color: var(--wash); }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; padding: 5px 0; }
+  .row b { color: var(--navy); }
+  .big { font-size: 34px; font-weight: 800; color: var(--accent); line-height: 1.1; }
+  .muted { color: var(--slate); font-size: 13px; line-height: 1.45; }
+  .btn { width: 100%; padding: 15px; border-radius: 14px; background: var(--navy); color: var(--white); font-weight: 700; font-size: 16px; }
+  .btn.ghost { background: var(--white); color: var(--navy); border: 1.5px solid var(--navy); margin-top: 8px; }
+  .btn[disabled] { opacity: .4; cursor: not-allowed; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; background: var(--tint); color: var(--accent); }
+  .pill.warn { background: var(--warnbg); color: var(--warn); }
+  .split { display: flex; height: 34px; border-radius: 10px; overflow: hidden; font-size: 12px; font-weight: 700; margin: 10px 0 6px; }
+  .split div { display: grid; place-items: center; white-space: nowrap; transition: flex-basis .25s; }
+  .legend { display: grid; gap: 4px; font-size: 12px; color: var(--slate); }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+  input[type=range] { width: 100%; accent-color: var(--accent); margin: 8px 0 2px; }
+  .ticks { display: flex; justify-content: space-between; font-size: 11px; color: var(--slate); }
+  .check { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.4; padding: 7px 0; }
+  .check .i { width: 20px; height: 20px; border-radius: 50%; background: var(--tint); color: var(--accent); font-size: 12px; font-weight: 800; display: grid; place-items: center; flex: none; margin-top: 1px; }
+  .check .i.no { background: #FDECEC; color: #B42318; }
+  .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.4; padding: 10px 0 4px; }
+  .consent input { width: 20px; height: 20px; accent-color: var(--accent); flex: none; margin-top: 1px; }
+
+  .viewfinder { position: relative; height: 270px; border-radius: 18px; background: radial-gradient(circle at 50% 45%, #2a3b46 0, #101d25 70%); overflow: hidden; margin-bottom: 12px; }
+  .dash { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 230px; height: 110px; border-radius: 60px 60px 18px 18px; background: #0a141a; border: 2px solid #33505f; display: grid; place-items: center; }
+  .odo { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 30px; letter-spacing: 3px; color: #9ff5d6; background: #04100c; padding: 6px 12px; border-radius: 6px; }
+  .odo small { font-size: 12px; letter-spacing: 0; margin-left: 6px; color: #6fbfa3; }
+  .frame { position: absolute; inset: 70px 40px; border: 2px dashed var(--mint); border-radius: 12px; }
+  .vf-top { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; }
+  .vf-top span { font-size: 11px; color: #cfe; background: rgba(0,0,0,.35); padding: 4px 8px; border-radius: 99px; }
+  .shutter { width: 64px; height: 64px; border-radius: 50%; border: 4px solid var(--navy); background: var(--white); margin: 0 auto 4px; display: block; }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .flash.go { animation: flash .35s; }
+  @keyframes flash { 0% { opacity: .9; } 100% { opacity: 0; } }
+
+  .timeline { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin: 10px 0 4px; }
+  .timeline div { text-align: center; font-size: 10.5px; color: var(--slate); }
+  .timeline i { display: block; height: 6px; border-radius: 3px; background: var(--line); margin-bottom: 5px; }
+  .timeline .done i { background: var(--accent); }
+  .timeline .now i { background: var(--mint); }
+
+  .track { display: grid; gap: 0; margin: 6px 0 4px; }
+  .track div { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 13.5px; line-height: 1.35; padding-bottom: 12px; position: relative; }
+  .track div::before { content: ""; position: absolute; left: 10px; top: 20px; bottom: 0; width: 2px; background: var(--line); }
+  .track div:last-child::before { display: none; }
+  .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--line); display: grid; place-items: center; font-size: 11px; color: var(--white); font-weight: 800; z-index: 1; }
+  .track .ok .dot { background: var(--accent); }
+  .track .live .dot { background: var(--mint); color: var(--navy); }
+  .meter { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin: 6px 0 4px; }
+  .meter i { display: block; height: 100%; background: var(--accent); }
+  .sheet { position: absolute; inset: auto 0 0 0; background: var(--white); border-radius: 22px 22px 0 0; box-shadow: 0 -10px 30px rgba(0,0,0,.2); padding: 18px; transform: translateY(105%); transition: transform .25s; z-index: 5; }
+  .sheet.open { transform: none; }
+  .scrim { position: absolute; inset: 0; background: rgba(11,43,60,.35); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 4; }
+  .scrim.open { opacity: 1; pointer-events: auto; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 820px) {
+    .stage { padding: 0; gap: 0; align-items: stretch; }
+    .guide { display: none; }
+    .phone { width: 100%; height: 100dvh; border-radius: 0; padding: 0; box-shadow: none; }
+    .screen { border-radius: 0; }
+    .status { display: none; }
+    .mnav { display: flex !important; }
+  }
+  .mnav { display: none; gap: 6px; justify-content: center; padding: 8px 0 0; }
+  .mnav button { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .mnav button[aria-current="true"] { background: var(--navy); width: 22px; border-radius: 5px; }
+  body.shot .stage { padding: 0; background: transparent; }
+  body.shot { background: transparent; }
+  body.shot .guide { display: none; }
+  body.shot .phone { box-shadow: none; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <aside class="guide">
+    <h1>Pay-per-km car cover from XYZ Insurance</h1>
+    <p>Riya, 27, lives in Bengaluru and goes to the office twice a week. She drives about 6,000 km a year. Follow her year from quote to refund.</p>
+    <ol class="steps" id="steps"></ol>
+    <p class="note">Prototype for the Nagarro case assessment by Sukhpal Singh Mann. XYZ Insurance is the fictional insurer in the case. Names, car details and rupee figures are illustrative. No data leaves this page.</p>
+  </aside>
+
+  <div class="phone"><div class="screen" id="screen">
+    <div class="status"><span>9:41</span><span class="island"></span><span>5G</span></div>
+    <div class="bar"><div class="logo">XYZ</div><div><div class="t" id="barTitle">XYZ Insurance</div><div class="s" id="barSub">Pay-per-km car cover</div></div></div>
+
+    <!-- 1 QUOTE -->
+    <section data-s="1" class="body">
+      <h2>Pay for the kilometres you drive</h2>
+      <p class="sub">Your 2022 hatchback in Bengaluru, renewing on 15 Jan 2027.</p>
+      <div class="card">
+        <div class="label">How much will you drive this year?</div>
+        <div class="row"><span>Expected distance</span><b id="kmOut">6,000 km</b></div>
+        <input type="range" id="km" min="2000" max="15000" step="500" value="6000" aria-label="Expected kilometres this year">
+        <div class="ticks"><span>2,000</span><span>12,000+ pays the standard price</span></div>
+      </div>
+      <div class="card tint">
+        <div class="row"><span>You pay today (standard price)</span><b>₹10,000</b></div>
+        <div class="row"><span>Money back at year end</span><b id="backOut">₹3,000</b></div>
+        <div class="row" style="border-top:1px solid #bfe3d6;margin-top:4px;padding-top:9px"><span>Your car cover costs</span><b id="netOut" style="font-size:18px">₹7,000</b></div>
+        <div class="split" id="split"></div>
+        <div class="legend"><span style="--c:var(--navy)">Fixed part: theft, flood and service</span><span style="--c:var(--accent)">₹0.50 for each kilometre you drive</span><span style="--c:var(--mint)">Comes back to you</span></div>
+      </div>
+      <div class="card wash">
+        <div class="check"><span class="i">✓</span><span><b>The price only goes down.</b> Drive more than you expect and you simply get less back. You never pay extra.</span></div>
+        <div class="check"><span class="i">✓</span><span><b>Cover stays on all year</b>, whatever the kilometres.</span></div>
+        <div class="check"><span class="i">✓</span><span>Third-party cover is the same fixed ₹3,416 set by law.</span></div>
+      </div>
+    </section>
+
+    <!-- 2 CONSENT -->
+    <section data-s="2" class="body" hidden>
+      <h2>What we collect, and what we never do</h2>
+      <p class="sub">One screen, before you pay. You can change your mind later in Settings.</p>
+      <div class="card">
+        <div class="label">We collect</div>
+        <div class="check"><span class="i">✓</span><span>A photo of your odometer, taken in this app</span></div>
+        <div class="check"><span class="i">✓</span><span>The reading, the date and time</span></div>
+        <div class="check"><span class="i">✓</span><span>Your car's registration number</span></div>
+      </div>
+      <div class="card">
+        <div class="label" style="color:#B42318">We never collect</div>
+        <div class="check"><span class="i no">✕</span><span>Your location, at any time</span></div>
+        <div class="check"><span class="i no">✕</span><span>How you drive: speed, braking or routes</span></div>
+        <div class="check"><span class="i no">✕</span><span>Anything when the app is closed</span></div>
+      </div>
+      <div class="card wash">
+        <div class="row"><span>Kept for</span><b>Your policy term + 3 years</b></div>
+        <div class="row"><span>Used for</span><b>Your refund only</b></div>
+        <label class="consent"><input type="checkbox" id="agree"><span>I understand what XYZ collects and agree to share my odometer photos.</span></label>
+      </div>
+    </section>
+
+    <!-- 3 PHOTO -->
+    <section data-s="3" class="body" hidden>
+      <h2>Take your first odometer photo</h2>
+      <p class="sub">Photos can only be taken in this app. Gallery uploads are switched off.</p>
+      <div class="viewfinder">
+        <div class="vf-top"><span>● Live camera</span><span>KA 05 MN 4821</span></div>
+        <div class="dash"><div class="odo">024318<small>km</small></div></div>
+        <div class="frame"></div>
+        <div class="flash" id="flash"></div>
+      </div>
+      <div id="preShot">
+        <p class="muted" style="text-align:center;margin-bottom:10px">Fit the reading inside the frame, then tap the button.</p>
+        <button class="shutter" id="shutter" aria-label="Take photo"></button>
+      </div>
+      <div id="postShot" hidden>
+        <div class="card tint">
+          <div class="label">We read</div>
+          <div class="big">24,318 km</div>
+          <p class="muted">Is this right? If not, tap the number to fix it.</p>
+        </div>
+        <div class="card">
+          <div class="check"><span class="i">✓</span><span>Live photo from this phone's camera</span></div>
+          <div class="check"><span class="i">✓</span><span>No signs of editing or an AI-made image</span></div>
+          <div class="check"><span class="i">✓</span><span>Matches the car on your policy</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 STATEMENT -->
+    <section data-s="4" class="body" hidden>
+      <span class="pill">● Cover active</span>
+      <h2 style="margin-top:10px">Your statement, July 2027</h2>
+      <p class="sub">Next photo: 1 to 14 October. We'll remind you in the app and by SMS.</p>
+      <div class="card tint">
+        <div class="label">Money back on 14 Jan 2028, at your current pace</div>
+        <div class="big">₹3,000</div>
+        <p class="muted">You have driven 3,010 km in six months. If you keep this pace, you drive about 6,000 km this year.</p>
+        <div class="meter"><i style="width:50%"></i></div>
+        <div class="ticks"><span>15 Jan 2027</span><span>14 Jan 2028</span></div>
+      </div>
+      <div class="card">
+        <div class="label">Your photos</div>
+        <div class="timeline">
+          <div class="done"><i></i>Jan<br>24,318</div>
+          <div class="done"><i></i>Apr<br>25,790</div>
+          <div class="done"><i></i>Jul<br>27,328</div>
+          <div class="now"><i></i>Oct<br>due</div>
+          <div><i></i>Jan<br>final</div>
+        </div>
+      </div>
+      <div class="card wash">
+        <div class="check"><span class="i">✓</span><span>Your price has not changed. It is fixed until 14 Jan 2028.</span></div>
+        <div class="check"><span class="i">✓</span><span>A missed photo only delays your refund. Your cover and claims are never affected.</span></div>
+        <button class="muted" id="disputeBtn" style="text-decoration:underline;padding-top:6px">A reading looks wrong? Ask us to check it</button>
+      </div>
+    </section>
+
+    <!-- 5 CLAIM -->
+    <section data-s="5" class="body" hidden>
+      <h2>Report a claim</h2>
+      <p class="sub">Rear bumper and tail light, 22 Aug 2027. Reported in the app.</p>
+      <div class="card" style="border-color:#f4c7c3;background:#fff8f7">
+        <div class="row"><span><b>Is anyone hurt?</b></span><span class="pill warn">Call 112 first</span></div>
+        <p class="muted">Injury claims always go straight to a person.</p>
+      </div>
+      <div class="card tint">
+        <div class="label">AI has prepared your claim file</div>
+        <div class="row"><span>Repair estimate</span><b>₹18,400</b></div>
+        <div class="row"><span>How sure the AI is</span><b>92%</b></div>
+        <div class="meter"><i style="width:92%"></i></div>
+        <p class="muted">Based on your 6 photos and 2,140 similar past claims for this model.</p>
+      </div>
+      <div class="card">
+        <div class="label">What happens next</div>
+        <div class="track">
+          <div class="ok"><span class="dot">✓</span><span><b>Reported</b> · 10:12 am</span></div>
+          <div class="ok"><span class="dot">✓</span><span><b>File prepared by AI</b> · 10:14 am</span></div>
+          <div class="live"><span class="dot">●</span><span><b>Priya, claims assessor, is reviewing</b><br><span class="muted">A person approves every claim. Decision expected today.</span></span></div>
+          <div><span class="dot"></span><span>Repair at a cashless garage near you</span></div>
+        </div>
+      </div>
+      <p class="muted">Your odometer reading is not needed for this claim.</p>
+    </section>
+
+    <!-- 6 REFUND -->
+    <section data-s="6" class="body" hidden>
+      <span class="pill">✓ Refund paid</span>
+      <h2 style="margin-top:10px">₹3,000 is on its way</h2>
+      <p class="sub">Sent to riya@okaxis on 16 Jan 2028, two days after your final photo.</p>
+      <div class="card">
+        <div class="label">How we worked it out</div>
+        <div class="row"><span>Final reading, 14 Jan 2028</span><b>30,318 km</b></div>
+        <div class="row"><span>First reading, 15 Jan 2027</span><b>24,318 km</b></div>
+        <div class="row"><span>Driven this year</span><b>6,000 km</b></div>
+        <div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:9px"><span>Fixed part</span><b>₹4,000</b></div>
+        <div class="row"><span>6,000 km × ₹0.50</span><b>₹3,000</b></div>
+        <div class="row"><span>Your car cover cost</span><b>₹7,000</b></div>
+        <div class="row"><span>You paid at the start</span><b>₹10,000</b></div>
+        <div class="row"><span><b>Money back</b></span><b style="color:var(--accent);font-size:18px">₹3,000</b></div>
+      </div>
+      <div class="card wash">
+        <div class="check"><span class="i">✓</span><span>Our promise: paid within 7 days of your final photo, or we add ₹100 for every day we are late.</span></div>
+        <div class="check"><span class="i">✓</span><span>Next year you can use your refund against the renewal price instead.</span></div>
+      </div>
+      <div class="card">
+        <div class="label">Renewal, shown separately</div>
+        <div class="row"><span>Standard price next year</span><b>₹9,600</b></div>
+        <p class="muted">Lower because your car is a year older. Your claim did not change your price.</p>
+      </div>
+    </section>
+
+    <div class="foot">
+      <button class="btn" id="next">Continue</button>
+      <div class="mnav" id="mnav"></div>
+    </div>
+
+    <div class="scrim" id="scrim"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-label="Ask us to check a reading">
+      <h2 style="font-size:19px">We'll check your reading</h2>
+      <p class="sub">A named reviewer replies within 2 working days. If we got it wrong, we fix the reading and your refund.</p>
+      <div class="check"><span class="i">1</span><span>Take a fresh photo, or upload your last service record</span></div>
+      <div class="check"><span class="i">2</span><span>Still not happy? Our grievance officer, then IRDAI's Bima Bharosa portal, then the Insurance Ombudsman</span></div>
+      <button class="btn" id="closeSheet" style="margin-top:12px">Got it</button>
+    </div>
+  </div></div>
+</div>
+
+<script>
+  const S = [
+    { t: "Your quote", s: "Pay-per-km car cover", cta: "Buy for ₹10,000" },
+    { t: "Before you pay", s: "Your data", cta: "Agree and continue" },
+    { t: "Odometer photo", s: "Step 1 of 1", cta: "Confirm reading" },
+    { t: "Hi Riya", s: "Policy XYZ-PK-2027-0418", cta: "See a claim" },
+    { t: "Claim XYZ-C-55102", s: "Rear bumper", cta: "Skip to year end" },
+    { t: "Year end", s: "Your refund", cta: "Start again" },
+  ];
+  const names = ["Quote with refund", "What we collect", "In-app odometer photo", "Quarterly statement", "Claim: AI prepares, a person decides", "Refund at year end"];
+  const Q = 10000, FIX = 0.4 * Q, RATE = (0.6 * Q) / 12000;
+  let cur = 1, shot = false;
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => "₹" + Math.round(n).toLocaleString("en-IN");
+
+  function quote() {
+    const km = +$("km").value, net = Math.min(Q, FIX + RATE * km), back = Q - net;
+    $("kmOut").textContent = km.toLocaleString("en-IN") + " km";
+    $("backOut").textContent = fmt(back);
+    $("netOut").textContent = fmt(net);
+    const parts = [[FIX, "var(--navy)", "#fff", fmt(FIX)], [net - FIX, "var(--accent)", "#fff", fmt(net - FIX)], [back, "var(--mint)", "var(--navy)", back ? fmt(back) : ""]];
+    $("split").innerHTML = parts.filter((p) => p[0] > 0).map((p) => `<div style="flex:0 0 ${(p[0] / Q) * 100}%;background:${p[1]};color:${p[2]}">${(p[0] / Q) > .12 ? p[3] : ""}</div>`).join("");
+  }
+  function show(n) {
+    cur = n;
+    document.querySelectorAll("section[data-s]").forEach((el) => (el.hidden = +el.dataset.s !== n));
+    $("barTitle").textContent = S[n - 1].t;
+    $("barSub").textContent = S[n - 1].s;
+    $("next").textContent = S[n - 1].cta;
+    $("next").disabled = (n === 2 && !$("agree").checked) || (n === 3 && !shot);
+    document.querySelectorAll("#steps button, #mnav button").forEach((b) => b.setAttribute("aria-current", +b.dataset.n === n));
+    document.querySelector(`section[data-s="${n}"]`).scrollTop = 0;
+    history.replaceState(null, "", "?screen=" + n + (document.body.classList.contains("shot") ? "&shot=1" : ""));
+  }
+  function take() {
+    $("flash").classList.remove("go"); void $("flash").offsetWidth; $("flash").classList.add("go");
+    shot = true; $("preShot").hidden = true; $("postShot").hidden = false; show(3);
+  }
+
+  names.forEach((nm, i) => {
+    $("steps").insertAdjacentHTML("beforeend", `<li><button data-n="${i + 1}"><span class="n">${i + 1}</span>${nm}</button></li>`);
+    $("mnav").insertAdjacentHTML("beforeend", `<button data-n="${i + 1}" aria-label="${nm}"></button>`);
+  });
+  document.querySelectorAll("#steps button, #mnav button").forEach((b) => b.addEventListener("click", () => show(+b.dataset.n)));
+  $("km").addEventListener("input", quote);
+  $("agree").addEventListener("change", () => show(2));
+  $("shutter").addEventListener("click", take);
+  $("next").addEventListener("click", () => show(cur === 6 ? 1 : cur + 1));
+  const sheet = (o) => { $("sheet").classList.toggle("open", o); $("scrim").classList.toggle("open", o); };
+  $("disputeBtn").addEventListener("click", () => sheet(true));
+  $("closeSheet").addEventListener("click", () => sheet(false));
+  $("scrim").addEventListener("click", () => sheet(false));
+
+  const p = new URLSearchParams(location.search);
+  if (p.get("shot")) {
+    document.body.classList.add("shot");
+    $("agree").checked = true;
+    if (+p.get("screen") === 3) { shot = true; $("preShot").hidden = true; $("postShot").hidden = false; }
+  }
+  quote();
+  show(Math.min(6, Math.max(1, +p.get("screen") || 1)));
+</script>
+</body>
+</html>
