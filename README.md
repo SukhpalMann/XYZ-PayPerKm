@@ -1,9 +1,10 @@
-# XYZ Pay-per-km: clickable prototype
+# XYZ Pay-per-km: concept prototype
 
-A clickable prototype for the Nagarro case assessment (Sukhpal Singh Mann, ISB PGP Co 2027).
+A clickable concept prototype for the Nagarro case assessment (Sukhpal Singh Mann, ISB PGP Co 2027).
 
-It follows one customer, Riya, through six screens: the quote, consent, an in-app odometer photo, the quarterly statement, a claim, and the year-end refund.
+- **Guided demo:** 12 steps through Riya's year, from comparing cover at renewal to her refund and renewal offer. Each step says what happens and what it proves for XYZ. Use the arrow keys or tap the highlighted button.
+- **Try your numbers:** the refund rule, the year-end calculation and the claim routing rules, live.
 
-XYZ Insurance is fictional and every figure is illustrative.
+XYZ Insurance is fictional. Riya, Priya and Ananya are illustrative, as are the car, the dates and every rupee figure. Prices are before GST. No data leaves the page and no payment is taken.
 
-Live demo: https://sukhpalmann.github.io/XYZ-PayPerKm/
+Live: https://sukhpalmann.github.io/XYZ-PayPerKm/
