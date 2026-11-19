@@ -409,7 +409,7 @@ const STEPS = [null,
    xyz:"Digital reporting in minutes. The pilot targets 70% of claims reported digitally, against 25% today.", tag:["speed","Faster claims"],
    coach:"Anshika sends her claim", cta:"Send claim to XYZ"},
   {id:"ai", short:"AI drafts, Priya decides", stage:"Claim", title:"AI prepares the file, Priya decides",
-   say:"Within minutes the AI drafts an estimate of ₹18,400 with a 92% confidence score and its reasons. Priya, a claims assessor, checks the draft and approves it. A person approves every claim in the pilot.",
+   say:"Within minutes the AI drafts an estimate of ₹18,400 with a 92% confidence score and its reasons. Priya, a claims assessor, checks the draft and approves it. A person decides every claim in the pilot.",
    xyz:"The confidence score and reasons let Priya check quickly. Every change she makes is logged, and a sample of claims is assessed before staff see the draft, so the AI's accuracy is measured fairly.", tag:["trust","Trust moment 3"],
    before:"Waits 7 to 12 working days for a simple claim", coach:"See Priya's decision", cta:"See the decision"},
   {id:"approved", short:"Paid in 3 working days", stage:"Claim", title:"Approved and paid in 3 working days",
@@ -418,11 +418,11 @@ const STEPS = [null,
    coach:"On to year end", cta:"Done"},
   {id:"refund", short:"₹3,000 back at year end", stage:"Year end", title:"₹3,000 back, two days after her final photo",
    say:"In April 2028 she takes her final photo: 30,318 km, so 6,000 km this year. The app shows the sum, and the money reaches her UPI account two days later.",
-   xyz:"The moment that decides renewal. The refund is a calculation, not a claim, so XYZ can promise payment within 7 days and write it into the policy.", tag:["trust","Trust moment 4"],
+   xyz:"The moment that decides renewal. The refund is a calculation, not a claim, so XYZ can promise payment within 7 days of an accepted final reading and write it into the policy.", tag:["trust","Trust moment 4"],
    before:"Doubts a refund will ever arrive", coach:"See her renewal offer", cta:"See my renewal"},
   {id:"renewal", short:"Renewal with reasons", stage:"Renewal", title:"A renewal offer with a reason for every change",
    say:"Her renewal offer explains every change: the car is a year older, and her claim resets her no-claim discount. From now on she can set her refund against the renewal price.",
-   xyz:"The pilot reads renewals at months 15 to 16 to learn whether the refund keeps customers.", tag:["rel","Retention"],
+   xyz:"Renewals from months 12 to 16 show whether the refund keeps customers, before XYZ decides to scale.", tag:["rel","Retention"],
    coach:"End of Anshika's year", cta:"Renew pay-per-km"},
 ];
 const N = STEPS.length - 1;
@@ -481,10 +481,10 @@ function screenFor(id){
       <div class="cmp hi" id="hot"><div style="position:absolute;top:-10px;left:12px" class="chip n">${ic("spark")}New · pay per km</div>
         <div class="ins" style="margin-top:4px"><i style="background:var(--navy);color:var(--mint)">XYZ</i><div><b>XYZ Pay-per-km</b><span>Comprehensive · cover never stops</span></div><div class="pr"><b>₹13,416</b><span>today</span></div></div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;background:var(--tint);border-radius:12px;padding:9px 11px"><span style="font-size:12.5px;color:var(--green-d);font-weight:600">Expected back at 6,000 km</span><b style="font-size:20px;color:var(--green-d)" class="num">₹3,000</b></div>
-        <div class="feat"><div>${ic("check","ok")}Within the year the price only goes down</div><div>${ic("check","ok")}One odometer photo a quarter, no tracking</div></div></div>
+        <div class="feat"><div>${ic("check","ok")}Nothing more to pay after day one</div><div>${ic("check","ok")}One odometer photo a quarter, no tracking</div></div></div>
       <div class="cmp"><div class="ins"><i style="background:#8A6D3B">B</i><div><b>Insurer B</b><span>Kilometre pack, 7,500 km</span></div><div class="pr"><b>₹11,400</b><span>a year</span></div></div>
         <div class="feat"><div>${ic("warn","bad")}Car cover stops after 7,500 km unless topped up</div></div></div>
-      <p style="font-size:11px;color:var(--muted);margin-top:10px">Illustrative prices, before GST. Insurer names withheld.</p>
+      <p style="font-size:11px;color:var(--muted);margin-top:10px">Illustrative prices, before GST and other cover. Insurers A and B are examples, not real quotes.</p>
     </div>`, coach:{at:"card", top:256}};
   case "quote": { const p = price(KMV), pc = ((KMV - 2000) / 13000 * 100).toFixed(1);
     return { body:`
@@ -498,7 +498,7 @@ function screenFor(id){
       <div class="tiles block"><div class="tile"><span>You pay today</span><b>₹13,416</b></div><div class="tile"><span>Back at year end</span><b id="tb" style="color:var(--green)">${R(p.back)}</b></div><div class="tile hi"><span>Car cover really costs</span><b id="tc">${R(p.cost)}</b></div></div>
       <div class="card"><div class="bar" id="bar"><div style="flex:${p.fixed};background:var(--navy);color:#fff">${R(p.fixed)}</div><div style="flex:${p.used};background:var(--green);color:#fff">${p.used > 900 ? R(p.used) : ""}</div><div style="flex:${Math.max(p.back, 0.0001)};background:var(--mint);color:var(--navy)">${p.back > 900 ? R(p.back) : ""}</div></div>
         <div class="keys"><span><i style="background:var(--navy)"></i>Fixed: theft, flood, service</span><span><i style="background:var(--green)"></i>₹0.50 per km</span><span><i style="background:var(--mint)"></i>Back to you</span></div>
-        </div><div class="note block">${ic("down")}<span><b>Within the year the price only goes down.</b> Drive more and you get less back, never a bill. ₹13,416 includes ₹3,416 third party, fixed by law.</span></div>
+        </div><div class="note block">${ic("down")}<span><b>Nothing more to pay after day one.</b> Drive more and you get less back, never a bill. ₹13,416 includes ₹3,416 third party, fixed by law.</span></div>
     </div>`, coach:{at:"slider", top:300}}; }
   case "consent": return { body:`
     <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Before you pay</div><div class="s">Step 2 of 3 · your data</div></div></div>
@@ -568,7 +568,7 @@ function screenFor(id){
         <div class="li" style="padding:3px 0;font-size:13px">${ic("receipt","ok")}<span>Paint and labour priced from the garage's list</span></div>
         <div class="li" style="padding:3px 0;font-size:13px">${ic("image","ok")}<span>Photos match the car and show no edits</span></div></div>
       <div class="card" style="display:flex;gap:11px;align-items:center;background:var(--wash)">${avatar("P", "#067455", 42)}<div style="flex:1;font-size:12.5px;color:var(--grey);line-height:1.35"><b style="color:var(--ink);font-size:14.5px;display:block">Priya, claims assessor</b>Checks the draft and approves or changes it</div><span class="chip a">Reviewing</span></div>
-      <div class="note block">${ic("shield")}<span>Under XYZ's photo-only limit, so no surveyor visit is needed. A person approves every claim.</span></div>
+      <div class="note block">${ic("shield")}<span>Under XYZ's photo-only limit, so no surveyor visit is needed. A person decides every claim.</span></div>
     </div>`};
   case "approved": return { body:`
     <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Claim XYZ-C-1187</div><div class="s">Left side doors</div></div></div>
@@ -590,7 +590,7 @@ function screenFor(id){
         <div class="row"><span>Driven: 24,318 to 30,318 km</span><b>6,000 km</b></div><div class="hr"></div>
         <div class="row"><span>Fixed part</span><b>₹4,000</b></div><div class="row"><span>6,000 km × ₹0.50</span><b>₹3,000</b></div><div class="row"><span>Car cover cost you</span><b>₹7,000</b></div><div class="row"><span>You paid for car cover</span><b>₹10,000</b></div><div class="hr"></div>
         <div class="row big"><span><b style="color:var(--ink)">Money back</b></span><b style="color:var(--green)">₹3,000</b></div></div>
-      <div class="note block">${ic("shield")}<span><b>Written in your policy:</b> worked out from your photos and paid automatically within 7 days of your final reading. Claims are paid separately, once approved.</span></div>
+      <div class="note block">${ic("shield")}<span><b>Written in your policy:</b> worked out from your photos and paid automatically within 7 days of your final reading being accepted. Claims are paid separately, once approved.</span></div>
     </div>`};
   case "renewal": return { body:`
     <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Your renewal</div><div class="s">Cover from 15 Apr 2028</div></div></div>
@@ -665,11 +665,12 @@ function demo(){
 }
 
 /* ---------- try it yourself ---------- */
-const CARS = {hatch:{name:"Hatchback", sp:700000, rate:0.03283, cc:"1,000 to 1,500 cc"}, sedan:{name:"Sedan", sp:1100000, rate:0.03283, cc:"1,000 to 1,500 cc"}, suv:{name:"SUV", sp:1600000, rate:0.0344, cc:"over 1,500 cc"}};
+const CARS = {hatch:{name:"Hatchback", sp:700000}, sedan:{name:"Sedan", sp:1100000}, suv:{name:"SUV", sp:1600000}};
+const EXAMPLE_RATE = 0.03; // illustrative share of insured value. Each insurer sets its own own-damage rate.
 const AGES = {new:{name:"6 to 12 months", idv:0.85}, mid:{name:"2 to 3 years", idv:0.70}, old:{name:"4 to 5 years", idv:0.50}};
-function tariffQuote(){ const c = CARS[T.car], a = AGES[T.age]; return Math.round(c.sp * a.idv * c.rate); }
+function exampleQuote(){ const c = CARS[T.car], a = AGES[T.age]; return Math.round(c.sp * a.idv * EXAMPLE_RATE); }
 function tryView(){
-  const q = T.quote || tariffQuote(), p = price(T.km, q), drv = Math.max(0, T.close - T.open), py = price(drv, q);
+  const q = T.quote || exampleQuote(), p = price(T.km, q), drv = Math.max(0, T.close - T.open), py = price(drv, q);
   const pts = []; for (let k = 0; k <= 15000; k += 500) pts.push([k, price(k, q).back]);
   const W = 300, H = 120, sx = (k) => 30 + (k / 15000) * (W - 40), sy = (v) => 10 + (1 - v / (0.6 * q)) * (H - 30);
   const path = pts.map(([k, v], i) => (i ? "L" : "M") + sx(k).toFixed(1) + " " + sy(v).toFixed(1)).join(" ");
@@ -677,10 +678,10 @@ function tryView(){
   return topbar() + `<main class="try"><span class="eyebrow">${ic("calc")}Try your own numbers</span><h1>The refund rule and the claim rules, live</h1>
   <p class="sub">The same rules the guided demo uses. Change the car, the kilometres or the claim and watch the result. All figures are illustrative and before GST.</p>
   <div class="grid3">
-  <section class="panel"><h3><span class="i">${ic("car")}</span>Your quote</h3><p class="d">The standard quote comes from the car's insured value and a tariff rate. Real quotes are usually lower, so you can type your own.</p>
+  <section class="panel"><h3><span class="i">${ic("car")}</span>Your quote</h3><p class="d">Each insurer sets its own rate on the car's insured value. This starts from an illustrative 3% of that value, so type your real quote if you have one.</p>
     <div class="f"><label>Car</label><div class="pills">${Object.entries(CARS).map(([k, c]) => `<button data-t="car:${k}" class="${T.car === k ? "on" : ""}">${c.name}</button>`).join("")}</div></div>
     <div class="f"><label>Age</label><div class="pills">${Object.entries(AGES).map(([k, a]) => `<button data-t="age:${k}" class="${T.age === k ? "on" : ""}">${a.name}</button>`).join("")}</div></div>
-    <div class="f"><label>Standard own-damage quote <b>${T.quote ? (T.quote === 10000 ? "Anshika's quote" : "your number") : "at tariff rates"}</b></label><input class="inp" id="tq" inputmode="numeric" value="${q}"></div>
+    <div class="f"><label>Standard own-damage quote <b>${T.quote ? (T.quote === 10000 ? "Anshika's quote" : "your number") : "illustrative 3% of insured value"}</b></label><input class="inp" id="tq" inputmode="numeric" value="${q}"></div>
     <div class="f"><label>Kilometres this year <b>${KM(T.km)} km</b></label><input type="range" min="0" max="15000" step="500" value="${T.km}" id="tk" style="--p:${(T.km / 15000 * 100).toFixed(1)}%"></div>
     <div class="out"><div class="row"><span>Fixed part (40%)</span><b>${R(p.fixed)}</b></div><div class="row"><span>Per km (60% over 12,000 km)</span><b>₹${p.rate.toFixed(2)}</b></div><div class="row"><span>Car cover costs</span><b>${R(p.cost)}</b></div><div class="hr"></div><div class="row big"><span>Money back</span><b style="color:var(--green)">${R(p.back)} · ${Math.round(p.share * 100)}%</b></div></div>
     <div class="lbl" style="margin-top:14px">Money back by kilometres</div><svg class="chart" viewBox="0 0 ${W} ${H}" width="100%" style="margin-top:12px"><line x1="30" y1="${H - 20}" x2="${W - 10}" y2="${H - 20}" stroke="#D3E3DD"/><path d="${path}" fill="none" stroke="#067455" stroke-width="2.5"/><circle cx="${sx(Math.min(T.km, 15000))}" cy="${sy(p.back)}" r="5" fill="#47D7AC" stroke="#067455" stroke-width="2"/><text x="30" y="${H - 6}">0 km</text><text x="${sx(12000)}" y="${H - 6}" text-anchor="end">12,000 km</text><text x="${W - 10}" y="${H - 6}" text-anchor="end">15,000</text></svg></section>
@@ -690,7 +691,7 @@ function tryView(){
     ${T.close < T.open ? `<div class="out"><div class="row big"><span>Closing reading is below the opening one</span></div><div class="row"><span>No refund is worked out. The reading goes to a person for review.</span></div></div>` : `<div class="out"><div class="row"><span>Driven this year</span><b>${KM(drv)} km</b></div><div class="row"><span>Car cover costs, on the quote</span><b>${R(py.cost)}</b></div><div class="hr"></div><div class="row big"><span>Refund</span><b style="color:var(--green)">${R(py.back)}</b></div></div>`}
     <div class="note" style="margin-top:12px">${ic("shield")}<span>Paid automatically within 7 days of the accepted final reading. A missed photo only delays the refund. Claims are paid separately.</span></div>
     <div class="note amb" style="margin-top:8px">${ic("warn")}<span>A reading lower than the last one, or a big jump, goes to a person before anything is paid.</span></div></section>
-  <section class="panel"><h3><span class="i">${ic("route")}</span>How a claim is routed</h3><p class="d">AI prepares every file. Rules decide who looks at it. A person approves every claim in the pilot.</p>
+  <section class="panel"><h3><span class="i">${ic("route")}</span>How a claim is routed</h3><p class="d">AI prepares every file. Rules decide who looks at it. A person decides every claim in the pilot.</p>
     <div class="f"><label>Claim amount <b>${R(T.amt)}</b></label><input type="range" min="2000" max="150000" step="1000" value="${T.amt}" id="ta" style="--p:${((T.amt - 2000) / 148000 * 100).toFixed(1)}%"></div>
     <div class="f"><label>AI confidence <b>${T.conf}%</b></label><input type="range" min="40" max="99" step="1" value="${T.conf}" id="tf" style="--p:${((T.conf - 40) / 59 * 100).toFixed(1)}%"></div>
     ${[["injury", "Someone is injured"], ["tp", "Another person's car or property"], ["theft", "Theft or total loss"], ["fraud", "Fraud signals (edited or reused photos)"]].map(([k, t]) => `<div class="sw">${t}<span class="tog ${T[k] ? "" : "off"}" data-t="flag:${k}" role="switch" aria-checked="${T[k]}"></span></div>`).join("")}
