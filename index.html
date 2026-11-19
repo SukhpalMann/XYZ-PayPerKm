@@ -381,8 +381,8 @@ const STEPS = [null,
    xyz:"Found where people already shop at renewal. The refund sits beside the price, so the offer is clear before anyone clicks.", tag:["adopt","Adoption"],
    before:"Pays the same as someone who drives 15,000 km", coach:"Riya taps XYZ's plan", cta:"View XYZ plan"},
   {id:"quote", short:"Sees three numbers", stage:"Quote", title:"She sees three numbers before she pays",
-   say:"She sets how far she expects to drive. The quote shows what she pays today, what she should get back and what her car cover really costs. Drag the slider to try other mileages.",
-   xyz:"Answers the main adoption worry, paying the full price upfront, before payment. Within the year the price can only go down.", tag:["trust","Trust moment 1"],
+   say:"Her car is covered up to its insured value of ₹3.5 lakh, the same as a standard policy. She sets how far she expects to drive, and the quote shows what she pays today, what she should get back and what the cover really costs her.",
+   xyz:"Answers the main adoption worry, paying the full price upfront, before payment. Cover stays at the car's full insured value however little she drives.", tag:["trust","Trust moment 1"],
    coach:"Drag to change the kilometres", cta:"Continue"},
   {id:"consent", short:"Agrees to what is collected", stage:"Buy", title:"What XYZ collects, and what it never does",
    say:"Before paying, one screen lists exactly what the app collects: odometer photos and readings. Never her location, how she drives or her gallery.",
@@ -405,7 +405,7 @@ const STEPS = [null,
    xyz:"Every reading can be challenged. If she is right, the refund is worked out again.", tag:["guard","Guardrail"],
    coach:"Riya sends a fresh photo", cta:"Send a fresh photo"},
   {id:"claim", short:"Reports a claim", stage:"Claim", title:"An accident: safety first, then guided photos",
-   say:"In November someone scrapes her front bumper. The app asks first whether anyone is hurt, with a button to call 112. Then it guides four photos of the damage.",
+   say:"In November someone scrapes the side of her parked car. The app asks first whether anyone is hurt, with a button to call 112. Then it guides her through the photos it needs.",
    xyz:"Digital reporting in minutes. The pilot targets 70% of claims reported digitally, against 25% today.", tag:["speed","Faster claims"],
    coach:"Riya sends her claim", cta:"Send claim to XYZ"},
   {id:"ai", short:"AI drafts, Priya decides", stage:"Claim", title:"AI prepares the file, Priya decides",
@@ -418,7 +418,7 @@ const STEPS = [null,
    coach:"On to year end", cta:"Done"},
   {id:"refund", short:"₹3,000 back at year end", stage:"Year end", title:"₹3,000 back, two days after her final photo",
    say:"In April 2028 she takes her final photo: 30,318 km, so 6,000 km this year. The app shows the sum, and the money reaches her UPI account two days later.",
-   xyz:"Trust moment 4, the one that decides renewal. The 7-day promise is written into the policy wording.", tag:["trust","Trust moment 4"],
+   xyz:"The moment that decides renewal. The refund is a calculation, not a claim, so XYZ can promise payment within 7 days and write it into the policy.", tag:["trust","Trust moment 4"],
    before:"Doubts a refund will ever arrive", coach:"See her renewal offer", cta:"See my renewal"},
   {id:"renewal", short:"Renewal with reasons", stage:"Renewal", title:"A renewal offer with a reason for every change",
    say:"Her renewal offer explains every change: the car is a year older, and her claim resets her no-claim discount. From now on she can set her refund against the renewal price.",
@@ -462,6 +462,8 @@ const dmgSvg = (kind) => {
   }[kind];
   return `<svg viewBox="0 0 160 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="160" height="120" fill="${bg}"/>${inner}</svg>`;
 };
+const photo = (f, pos = "center", extra = "") => `<div style="width:100%;height:100%;background:#0B1419 url('img/${f}') no-repeat;background-size:cover;background-position:${pos};${extra}"></div>`;
+const riyaPhoto = (s = 52) => `<span style="width:${s}px;height:${s}px;border-radius:50%;flex:none;display:inline-block;background:url('img/riya.jpg') center/cover;box-shadow:0 0 0 2px #fff,0 0 0 3px var(--line)"></span>`;
 const riyaAv = (s = 52) => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="32" fill="#DFF6EE"/>
   <path d="M15 64c1-12 8-19 17-19s16 7 17 19Z" fill="#067455"/><path d="M19 30c0-11 6-18 13-18s14 6 14 17c0 6-1 11-3 14H22c-2-3-3-7-3-13Z" fill="#2B1B17"/>
   <circle cx="32" cy="30" r="11" fill="#C98E6B"/><path d="M21 28c2-8 7-12 12-12s9 3 11 9c-6 0-14-2-18-6-1 3-3 6-5 9Z" fill="#2B1B17"/><rect x="28" y="39" width="8" height="7" rx="3" fill="#C98E6B"/></svg>`;
@@ -488,7 +490,7 @@ function screenFor(id){
     return { body:`
     <div class="ah"><span class="logo lg">XYZ</span><div><div class="t">Your quote</div><div class="s">Pay-per-km car cover</div></div><span class="sp"></span><span class="chip g">${ic("shield")}Comprehensive</span></div>
     <div class="pad">
-      <div class="card" style="display:flex;gap:12px;align-items:center;padding:8px 12px">${carSvg(78)}<div style="font-size:12.5px;color:var(--grey);line-height:1.35"><b style="color:var(--ink);font-size:14px">2022 hatchback</b><br>1,197 cc · Bengaluru · quote ₹10,000</div></div>
+      <div class="card" style="display:flex;gap:12px;align-items:center;padding:8px 12px">${carSvg(78)}<div style="font-size:12.5px;color:var(--grey);line-height:1.35"><b style="color:var(--ink);font-size:14px">2022 hatchback, 1,197 cc</b><br>Covered up to <b style="color:var(--green-d)">₹3.5 lakh</b>, its insured value</div></div>
       <div class="card"><div class="lbl">How far will you drive this year?</div>
         <div style="display:flex;align-items:baseline;justify-content:space-between;margin:8px 0 10px"><span style="font-size:13px;color:var(--grey)">Expected distance</span><b style="font-size:22px;color:var(--navy)" class="num" id="kmv">${KM(KMV)} km</b></div>
         <input type="range" min="2000" max="15000" step="500" value="${KMV}" id="kms" style="--p:${pc}%" aria-label="Expected kilometres">
@@ -514,14 +516,14 @@ function screenFor(id){
     </div>`};
   case "photo": return { dark:true, body:`
     <div class="cam"><div class="top"><span class="x">${ic("x")}</span><span style="font-weight:650;font-size:14px">Odometer photo · 1 of 5</span><span class="x">${ic("flash")}</span></div>
-      <div class="vf">${dashSvg("024318")}<span class="corner tl1"></span><span class="corner tr1"></span><span class="corner bl1"></span><span class="corner br1"></span>
+      <div class="vf">${photo("odo_24318.jpg", "42% 60%", "background-size:190% auto")}<span class="corner tl1"></span><span class="corner tr1"></span><span class="corner bl1"></span><span class="corner br1"></span>
         <span class="chip" style="position:absolute;left:50%;transform:translateX(-50%);top:16px;background:rgba(11,20,25,.7);color:#fff">${ic("lock")}In-app camera only · gallery off</span></div>
       <div class="readout"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div><div class="lbl">We read</div><div class="reading" style="margin-top:4px">24,318 km</div></div><span class="chip g">${ic("badge")}Opening reading</span></div>
         <div class="chk"><div>${ic("ccheck")}Taken live in the app</div><div>${ic("ccheck")}No edits or AI changes</div><div>${ic("ccheck")}Not a photo of a screen</div><div>${ic("ccheck")}Matches KA 03 MX 4521</div></div>
         <p style="font-size:12px;color:var(--grey);margin:10px 0 4px">Only kilometres driven from today count towards your refund.</p></div></div>`, cta2:"Retake"};
   case "home": return { tabs:"home", body:`
     <div class="notif">${ic("bell")}<div style="flex:1"><div style="display:flex"><b>XYZ · October photo due</b><small>now</small></div>Your photo window is open until 14 October. It takes about 20 seconds.</div></div>
-    <div class="ah" style="padding-top:2px">${riyaAv(36)}<div><div class="t">Hi Riya</div><div class="s">Friday, 1 October 2027</div></div><span class="sp"></span><span class="back">${ic("bell")}</span></div>
+    <div class="ah" style="padding-top:2px">${riyaPhoto(36)}<div><div class="t">Hi Riya</div><div class="s">Friday, 1 October 2027</div></div><span class="sp"></span><span class="back">${ic("bell")}</span></div>
     <div class="pad">
       <div class="pol"><div class="k">Pay-per-km car cover</div><b>KA 03 MX 4521 · active</b><span class="chip">${ic("shield")}Until 14 Apr 2028</span></div>
       <div class="card" style="display:flex;gap:14px;align-items:center">
@@ -536,7 +538,7 @@ function screenFor(id){
       <div class="card" style="text-align:center;padding:16px 14px"><div class="lbl">Refund on track</div><div style="font-size:44px;font-weight:800;letter-spacing:-.03em;color:var(--green);line-height:1.05;margin:6px 0 4px" class="num">₹3,000</div><div style="font-size:13px;color:var(--grey)">back after your final photo in April, at this pace</div>
         <div style="display:flex;gap:6px;justify-content:center;margin-top:10px"><span class="chip">${ic("gauge")}3,000 km in 6 months</span><span class="chip g">${ic("lock")}Price unchanged</span></div></div>
       <div class="card"><div class="lbl">Your photos</div><div class="tl"><div class="ok"><i>${ic("check")}</i>Apr<br>24,318</div><div class="ok"><i>${ic("check")}</i>Jul<br>25,790</div><div class="ok"><i>${ic("check")}</i>Oct<br>27,318</div><div class="now"><i></i>Jan<br>due</div><div><i></i>Apr<br>final</div></div></div>
-      <div class="card" style="display:flex;gap:12px;align-items:center"><div style="width:70px;height:54px;border-radius:10px;overflow:hidden;flex:none">${dashSvg("027318")}</div><div style="font-size:13px;color:var(--grey)"><b style="color:var(--ink);font-size:14px;display:block">Reading used: 27,318 km</b>Photo taken in the app on 3 Oct 2027</div></div>
+      <div class="card" style="display:flex;gap:12px;align-items:center"><div style="width:70px;height:54px;border-radius:10px;overflow:hidden;flex:none">${photo("odo_27318.jpg", "40% 66%", "background-size:300% auto")}</div><div style="font-size:13px;color:var(--grey)"><b style="color:var(--ink);font-size:14px;display:block">Reading used: 27,318 km</b>Photo taken in the app on 3 Oct 2027</div></div>
     </div>
     ${sheet ? `<div class="sheet-bg"></div><div class="sheet"><div class="grab"></div>
       <div class="t" style="font-weight:800;font-size:18px;color:var(--navy)">Check my reading</div><div class="lead" style="margin:2px 0 12px">Case XYZ-R-3021 · reading of 3 Oct 2027</div>
@@ -550,26 +552,26 @@ function screenFor(id){
     <div class="pad">
       <div class="card"><div class="lbl">First, is anyone hurt?</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px"><div style="border-radius:13px;background:var(--red-t);color:var(--red);font-weight:700;font-size:14px;padding:12px;display:flex;gap:7px;align-items:center;justify-content:center">${ic("phone")}Yes, call 112</div><div style="border-radius:13px;background:var(--navy);color:#fff;font-weight:700;font-size:14px;padding:12px;display:flex;gap:7px;align-items:center;justify-content:center">${ic("check")}No one is hurt</div></div></div>
-      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div class="lbl">Guided photos</div><span class="chip g">4 of 4 done</span></div>
-        <div class="ph"><div>${dmgSvg("front")}<span>${ic("check")}Front</span></div><div>${dmgSvg("close")}<span>${ic("check")}Damage close-up</span></div><div>${dmgSvg("side")}<span>${ic("check")}Left side</span></div><div>${dmgSvg("plate")}<span>${ic("check")}Number plate</span></div></div></div>
+      <div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div class="lbl">Guided photos</div><span class="chip g">2 of 2 done</span></div>
+        <div class="ph" style="grid-template-columns:1fr"><div style="aspect-ratio:16/10">${photo("dmg_wide.jpg", "center 60%")}<span>${ic("check")}Wide shot</span></div><div style="aspect-ratio:16/9">${photo("dmg_close.jpg", "center 45%")}<span>${ic("check")}Close-up of the damage</span></div></div></div>
       <div class="note block">${ic("info")}<span>Your odometer photos never delay a claim.</span></div>
     </div>`};
   case "ai": return { body:`
-    <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Claim XYZ-C-1187</div><div class="s">Front bumper · 19 Nov</div></div><span class="sp"></span><span class="chip b">${ic("clock")}With Priya</span></div>
+    <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Claim XYZ-C-1187</div><div class="s">Left side doors · 19 Nov</div></div><span class="sp"></span><span class="chip b">${ic("clock")}With Priya</span></div>
     <div class="pad">
       <div class="card" style="border-color:#CDE3F0"><div style="display:flex;justify-content:space-between;align-items:center"><span class="chip b">${ic("cpu")}AI draft · ready at 10:20</span></div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;margin:10px 0 8px"><div><div style="font-size:12.5px;color:var(--grey)">Repair estimate</div><div style="font-size:34px;font-weight:800;color:var(--navy);letter-spacing:-.03em;line-height:1.05" class="num">₹18,400</div></div>
           <div style="text-align:right"><div style="font-size:12.5px;color:var(--grey)">Confidence</div><div style="font-size:30px;font-weight:800;color:var(--green);letter-spacing:-.02em;line-height:1.05" class="num">92%</div></div></div>
         <div class="meter"><div style="width:92%"></div></div>
         <div style="font-size:12.5px;font-weight:700;color:var(--ink-2);margin:12px 0 2px">Why the AI thinks so</div>
-        <div class="li" style="padding:3px 0;font-size:13px">${ic("history","ok")}<span>Matches 46 similar bumper repairs in Bengaluru</span></div>
-        <div class="li" style="padding:3px 0;font-size:13px">${ic("receipt","ok")}<span>Parts priced from the garage's list</span></div>
+        <div class="li" style="padding:3px 0;font-size:13px">${ic("history","ok")}<span>Matches 46 similar door scrapes in Bengaluru</span></div>
+        <div class="li" style="padding:3px 0;font-size:13px">${ic("receipt","ok")}<span>Paint and labour priced from the garage's list</span></div>
         <div class="li" style="padding:3px 0;font-size:13px">${ic("image","ok")}<span>Photos match the car and show no edits</span></div></div>
       <div class="card" style="display:flex;gap:11px;align-items:center;background:var(--wash)">${avatar("P", "#067455", 42)}<div style="flex:1;font-size:12.5px;color:var(--grey);line-height:1.35"><b style="color:var(--ink);font-size:14.5px;display:block">Priya, claims assessor</b>Checks the draft and approves or changes it</div><span class="chip a">Reviewing</span></div>
       <div class="note block">${ic("shield")}<span>Under XYZ's photo-only limit, so no surveyor visit is needed. A person approves every claim.</span></div>
     </div>`};
   case "approved": return { body:`
-    <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Claim XYZ-C-1187</div><div class="s">Front bumper</div></div></div>
+    <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Claim XYZ-C-1187</div><div class="s">Left side doors</div></div></div>
     <div class="pad" style="text-align:center">
       <div class="big-ok">${ic("check")}</div>
       <div class="h1" style="font-size:24px">Approved: ₹18,400</div><div class="lead">Paid straight to your garage. Nothing for you to pay except the policy excess.</div>
@@ -588,7 +590,7 @@ function screenFor(id){
         <div class="row"><span>Driven: 24,318 to 30,318 km</span><b>6,000 km</b></div><div class="hr"></div>
         <div class="row"><span>Fixed part</span><b>₹4,000</b></div><div class="row"><span>6,000 km × ₹0.50</span><b>₹3,000</b></div><div class="row"><span>Car cover cost you</span><b>₹7,000</b></div><div class="row"><span>You paid for car cover</span><b>₹10,000</b></div><div class="hr"></div>
         <div class="row big"><span><b style="color:var(--ink)">Money back</b></span><b style="color:var(--green)">₹3,000</b></div></div>
-      <div class="note block">${ic("shield")}<span><b>Our promise, written in your policy:</b> paid within 7 days of your final photo, or we add ₹100 for every day we are late.</span></div>
+      <div class="note block">${ic("shield")}<span><b>Written in your policy:</b> worked out from your photos and paid automatically within 7 days of your final reading. Claims are paid separately, once approved.</span></div>
     </div>`};
   case "renewal": return { body:`
     <div class="ah"><span class="back">${ic("cl")}</span><div><div class="t">Your renewal</div><div class="s">Cover from 15 Apr 2028</div></div></div>
@@ -641,7 +643,7 @@ function landing(){
   <section class="how"><div><span class="n">1</span><h3>Pay the usual price</h3><p>The full standard price upfront, as Indian law requires. The quote shows the refund you can expect.</p></div>
   <div><span class="n">2</span><h3>One photo a quarter</h3><p>An odometer photo in the app, checked for edits. No GPS, no device in the car, no driving score.</p></div>
   <div><span class="n">3</span><h3>Money back at year end</h3><p>40% of the price is fixed. The rest is spread over 12,000 km, and what you did not drive comes back.</p></div></section>
-  <p class="foot">Student prototype for the Nagarro case assessment by Sukhpal Singh Mann, ISB PGP Co 2027. XYZ Insurance is the fictional insurer in the case, and this is not a real insurance product. Riya, Priya and Ananya are illustrative, as are the car, the dates and every rupee figure. Prices are before GST. No data leaves this page and no payment is taken.</p></main>`;
+  <p class="foot">Student prototype for the Nagarro case assessment by Sukhpal Singh Mann, ISB PGP Co 2027. XYZ Insurance is the fictional insurer in the case, and this is not a real insurance product. Riya, Priya and Ananya are illustrative, as are the car, the dates and every rupee figure. Prices are before GST. No data leaves this page and no payment is taken. Photos: Unsplash (free licence); the odometer reading is edited to fit the demo.</p></main>`;
 }
 function demo(){
   const st = STEPS[STEP];
@@ -655,7 +657,7 @@ function demo(){
     <div class="dots">${dots}</div>
     <button class="arrow next" data-go="${STEP === N ? "restart" : "next"}" aria-label="Next">${STEP === N ? ic("restart") : ic("ar")}</button></section>
   <div class="stage">
-    <aside class="side l"><div class="persona">${riyaAv(52)}<div><b>Riya, 27</b><span>Bengaluru. Office twice a week. 2022 hatchback, about 6,000 km a year.</span></div></div>
+    <aside class="side l"><div class="persona">${riyaPhoto(56)}<div><b>Riya, 27</b><span>Bengaluru. Office twice a week. 2022 hatchback, about 6,000 km a year.</span></div></div>
       <div class="hint">Each step shows one moment in her year. The coloured tag says what it proves for XYZ. Tap the highlighted button in the phone, or use <span class="kbd">←</span> <span class="kbd">→</span>.</div></aside>
     <div style="display:flex;justify-content:center"><div class="pwrap">${phone(STEP)}</div></div>
     <aside class="side"><h4>Riya's year</h4>${list}</aside></div>
@@ -686,7 +688,7 @@ function tryView(){
     <div class="f"><label>Opening reading, km</label><input class="inp" id="to" inputmode="numeric" value="${T.open}"></div>
     <div class="f"><label>Closing reading, km</label><input class="inp" id="tc2" inputmode="numeric" value="${T.close}"></div>
     ${T.close < T.open ? `<div class="out"><div class="row big"><span>Closing reading is below the opening one</span></div><div class="row"><span>No refund is worked out. The reading goes to a person for review.</span></div></div>` : `<div class="out"><div class="row"><span>Driven this year</span><b>${KM(drv)} km</b></div><div class="row"><span>Car cover costs, on the quote</span><b>${R(py.cost)}</b></div><div class="hr"></div><div class="row big"><span>Refund</span><b style="color:var(--green)">${R(py.back)}</b></div></div>`}
-    <div class="note" style="margin-top:12px">${ic("shield")}<span>Paid within 7 days of the final photo, or XYZ adds ₹100 a day. A missed photo only delays the refund.</span></div>
+    <div class="note" style="margin-top:12px">${ic("shield")}<span>Paid automatically within 7 days of the accepted final reading. A missed photo only delays the refund. Claims are paid separately.</span></div>
     <div class="note amb" style="margin-top:8px">${ic("warn")}<span>A reading lower than the last one, or a big jump, goes to a person before anything is paid.</span></div></section>
   <section class="panel"><h3><span class="i">${ic("route")}</span>How a claim is routed</h3><p class="d">AI prepares every file. Rules decide who looks at it. A person approves every claim in the pilot.</p>
     <div class="f"><label>Claim amount <b>${R(T.amt)}</b></label><input type="range" min="2000" max="150000" step="1000" value="${T.amt}" id="ta" style="--p:${((T.amt - 2000) / 148000 * 100).toFixed(1)}%"></div>
